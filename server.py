@@ -1,55 +1,56 @@
+import os
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 
+print(os.getenv("MYSQL_ROOT_PASSWORD"))
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{os.getenv("MYSQL_ROOT_PASSWORD")}@localhost:3307/coffeeshop'
+db = SQLAlchemy(app)
 
-users = {
-    "user": {
-        "favourite_coffee": None
-    }
-}
-AUTH_HEADER = "Basic dXNlcjplYTY1NDU0MS00MjZhLTQwOWMtYTFiMy00NTk3YTBlY2JmZWU="
-
-coffee_leaderboard = {}
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    favourite_coffee = db.Column(db.String(120))
 
 
-def is_authorized(request):
-    return True
-#    print(request.headers.get('Authorization'))
-#    return request.headers.get('Authorization') == AUTH_HEADER
-
+def authorize_user(request):
+    return request.headers.get('Authorization')
+    
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({"message": "hello!"}), 200
-   
+
 @app.route('/v1/coffee/favourite', methods=['GET'])
 def get_favourite_coffee():
-    if not is_authorized(request):
-        return jsonify({"message": "Unauthorized"}), 401
-
-    return jsonify({"favourite_coffee": users["user"]['favourite_coffee']}), 200
-
+    username = authorize_user(request)
+    if username is None:
+        return jsonify({"error": "unauthorized"}), 401
+    user = User.query.filter_by(username=username).first()
+    return jsonify({"favourite_coffee": user.favourite_coffee}), 200
 
 @app.route('/v1/admin/coffee/favourite/leaderboard', methods=['GET'])
 def get_coffee_leaderboard():
-    if not is_authorized(request):
-        return jsonify({"message": "Unauthorized"}), 401
-
-    leaderboard = sorted(coffee_leaderboard.items(), key=lambda x: x[1], reverse=True)
+    leaderboard = db.session.query(User.favourite_coffee, db.func.count(User.favourite_coffee)) \
+                                .group_by(User.favourite_coffee)                                \
+                                .order_by(db.func.count(User.favourite_coffee).desc())          \
+                                .limit(3)                                                       \
+                                .all()
+    leaderboard = [{"coffee": coffee, "count": count} for coffee, count in leaderboard]
     return jsonify({"leaderboard": leaderboard}), 200
-
 
 @app.route('/v1/coffee/favourite', methods=['POST'])
 def set_favourite_coffee():
-    if not is_authorized(request):
-        return jsonify({"message": "Unauthorized"}), 401
-
+    username = authorize_user(request)
+    if username is None:
+        return jsonify({"error": "unauthorized"}), 401
     coffee = request.json.get('coffee')
-
-    users["user"]['favourite_coffee'] = coffee
-
-    if coffee not in coffee_leaderboard:
-        coffee_leaderboard[coffee] = 0
-    coffee_leaderboard[coffee] += 1
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        user = User(username=username, favourite_coffee=coffee)
+        db.session.add(user)
+    else:
+        user.favourite_coffee = coffee
+    db.session.commit()
 
     return jsonify({"message": "Favourite coffee set successfully"}), 200
 
