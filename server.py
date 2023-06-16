@@ -2,9 +2,9 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-print(os.getenv("MYSQL_ROOT_PASSWORD"))
+print(os.getenv("MYSQL_PASSWORD"))
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:{os.getenv("MYSQL_ROOT_PASSWORD")}@localhost:3307/coffeeshop'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{os.getenv("MYSQL_USERNAME")}:{os.getenv("MYSQL_PASSWORD")}@{os.getenv("MYSQL_HOST")}:{os.getenv("MYSQL_PORT")}/coffeeshop'
 db = SQLAlchemy(app)
 
 class User(db.Model):
