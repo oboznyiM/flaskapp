@@ -25,6 +25,8 @@ services:
     image: oboznyi/hs-lb:1
     ports:
       - 5000:8080
+    environment:
+      BACKENDS: "http://hs-app-1:8080,http://hs-app-2:8080,http://hs-app-3:8080"
 
   mysql:
     image: mysql:8
