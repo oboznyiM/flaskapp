@@ -1,0 +1,251 @@
+{
+	"info": {
+		"_postman_id": "1a6379a4-f0f3-497a-9721-136336155fc1",
+		"name": "Full server test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19004087"
+	},
+	"item": [
+		{
+			"name": "Test Database for the instance",
+			"item": [
+				{
+					"name": "View leaderboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/v1/admin/coffee/favourite/leaderboard",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"admin",
+								"coffee",
+								"favourite",
+								"leaderboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set favorite coffee of the user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "user4",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"coffee\": \"Ice coffee\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/v1/coffee/favourite",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"coffee",
+								"favourite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View favorite coffee",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "user",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/v1/coffee/favourite",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"coffee",
+								"favourite"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test LB",
+			"item": [
+				{
+					"name": "View leaderboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "localhost:5000/v1/admin/coffee/favourite/leaderboard",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"v1",
+								"admin",
+								"coffee",
+								"favourite",
+								"leaderboard"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set favorite coffee of the user",
+					"protocolProfileBehavior": {
+						"followAuthorizationHeader": true,
+						"followOriginalHttpMethod": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "user",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"coffee\": \"rando\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/v1/coffee/favourite",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"v1",
+								"coffee",
+								"favourite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add instances",
+					"protocolProfileBehavior": {
+						"followOriginalHttpMethod": true,
+						"followAuthorizationHeader": true,
+						"disableCookies": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"http://host.docker.internal:8080\",\"http://172.17.0.3:8080\",\"http://8.8.8.8:8082\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/instances",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"instances"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View instance states",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/instances",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"instances"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test balancing",
+					"protocolProfileBehavior": {
+						"followAuthorizationHeader": true,
+						"followRedirects": false
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "user",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:5000/v1/coffee/favourite",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"v1",
+								"coffee",
+								"favourite"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
