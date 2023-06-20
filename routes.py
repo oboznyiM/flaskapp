@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from database import db, User
 from auth import authorize_user
+from email_service import send_email
 
 def health():
     return jsonify({"message": "hello!"}), 200
@@ -32,6 +33,7 @@ def set_favourite_coffee():
         db.session.add(user)
     else:
         user.favourite_coffee = coffee
+    send_email("kek", "lol", "top")
     db.session.commit()
 
     return jsonify({"message": "Favourite coffee set successfully"}), 200
