@@ -1,0 +1,53 @@
+{
+	"info": {
+		"_postman_id": "2579fca7-9953-4f7e-b5b8-0810ff1bb8c0",
+		"name": "L3. LB test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19004087"
+	},
+	"item": [
+		{
+			"name": "Add instances",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\"http://127.0.0.1:8080\",\"http://127.0.0.1:8081\",\"http://127.0.0.1:8082\"]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/instances",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"instances"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View instance states",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Test balancing",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
