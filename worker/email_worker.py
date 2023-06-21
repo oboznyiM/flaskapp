@@ -24,4 +24,6 @@ def poll_sqs():
             time.sleep(10)
 
 if __name__ == "__main__":
-    threading.Thread(target=poll_sqs).start()
+    print("Started email worker")
+    poll_sqs()
+    #threading.Thread(target=poll_sqs).start()

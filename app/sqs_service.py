@@ -49,5 +49,5 @@ class SQSService(metaclass=Singleton):
             ReceiptHandle=receipt_handle
         )
 
-SQS_QUEUE_URL = 'https://sqs.eu-central-1.amazonaws.com/484829816618/LongTaskQueue'
+SQS_QUEUE_URL = os.getenv("SQS_QUEUE_URL")
 sqs_service = SQSService(SQS_QUEUE_URL)
