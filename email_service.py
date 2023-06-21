@@ -1,10 +1,10 @@
 from sqs_service import sqs_service
 
-def send_email(email_address, subject, content):
+def send_email(username, coffee):
     message = {
-        'email_address': email_address,
-        'subject': subject,
-        'content': content
+        'email_address': f"{username}@gmail.com",
+        'subject': "Favourite cofee change",
+        'content': f"You favourite coffees have been successfully changed to {coffee}"
     }
 
     message_id = sqs_service.send_message(message)

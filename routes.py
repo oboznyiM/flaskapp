@@ -33,7 +33,7 @@ def set_favourite_coffee():
         db.session.add(user)
     else:
         user.favourite_coffee = coffee
-    send_email("kek", "lol", "top")
+    send_email(username, coffee)
     db.session.commit()
 
     return jsonify({"message": "Favourite coffee set successfully"}), 200
