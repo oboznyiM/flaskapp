@@ -8,9 +8,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{os.getenv("MYSQL_USERNAME")}:{os.getenv("MYSQL_PASSWORD")}@{os.getenv("MYSQL_HOST")}:{os.getenv("MYSQL_PORT")}/coffeeshop'
 db.init_app(app)
 
-with app.app_context():
-    db.create_all() 
-
 app.add_url_rule('/health', view_func=health, methods=['GET'])
 app.add_url_rule('/v1/coffee/favourite', view_func=get_favourite_coffee, methods=['GET'])
 app.add_url_rule('/v1/admin/coffee/favourite/leaderboard', view_func=get_coffee_leaderboard, methods=['GET'])
