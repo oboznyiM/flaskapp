@@ -36,11 +36,15 @@ if instances is not None:
 current = 0
 
 
-def rate_limiter(max_requests, expiry_time, key_prefix=""):
+def rate_limiter(
+    max_requests, expiry_time, getUserId=lambda req: req.remote_addr, key_prefix=""
+):
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            key = f"{key_prefix}:{request.remote_addr}:{time.time() // expiry_time}"
+            user_id = getUserId(request)
+
+            key = f"{key_prefix}:{user_id}:{time.time() // expiry_time}"
             current_requests_count = r.get(key)
             if (
                 current_requests_count is not None
@@ -55,7 +59,7 @@ def rate_limiter(max_requests, expiry_time, key_prefix=""):
                 if current_requests_count == 1:
                     r.expire(key, expiry_time)
                 logger.info(
-                    f"The user {request.remote_addr} acessed the resource {int(r.get(key))} times."
+                    f"The user {user_id} acessed the resource {request.full_path} {int(r.get(key))} times."
                 )
                 return f(*args, **kwargs)
 
@@ -107,7 +111,12 @@ def proxy_set_favorite():
 
 
 @app.route("/v1/admin/coffee/favourite/leaderboard", methods=["GET", "POST"])
-@rate_limiter(3, 60, key_prefix="leaderboard")
+@rate_limiter(
+    3,
+    60,
+    key_prefix="leaderboard",
+    getUserId=lambda request: request.headers.get("Authorization"),
+)
 def proxy_view_leaderboard():
     instance = getInstance()
     return redirect(
