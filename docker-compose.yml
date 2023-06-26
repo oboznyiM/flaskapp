@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   hs-app-1:
-    image: oboznyi/hs-app:1
+    image: oboznyi/hs-app:2
     ports:
       - 8080:8080
     environment:
@@ -9,9 +9,13 @@ services:
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: host.docker.internal
       MYSQL_PORT: 3307
-
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      SQS_QUEUE_URL: ${SQS_QUEUE_URL}
+  
   hs-app-2:
-    image: oboznyi/hs-app:1
+    image: oboznyi/hs-app:2
     ports:
       - 8082:8080
     environment:
@@ -19,9 +23,13 @@ services:
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: host.docker.internal
       MYSQL_PORT: 3307
-
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      SQS_QUEUE_URL: ${SQS_QUEUE_URL}
+      
   hs-app-3:
-    image: oboznyi/hs-app:1
+    image: oboznyi/hs-app:2
     ports:
       - 8083:8080
     environment:
@@ -29,7 +37,11 @@ services:
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: host.docker.internal
       MYSQL_PORT: 3307
-
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      SQS_QUEUE_URL: ${SQS_QUEUE_URL}
+      
   hs-lb:
     image: oboznyi/hs-lb:1
     ports:
@@ -37,13 +49,24 @@ services:
     environment:
       BACKENDS: "http://host.docker.internal:8080,http://host.docker.internal:8082,http://host.docker.internal:8083"
 
+  hs-worker-1:
+    image: oboznyi/hs-worker:1
+    ports:
+      - 9999:8080
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      SQS_QUEUE_URL: ${SQS_QUEUE_URL}
   mysql:
     image: mysql:8
     restart: always
     volumes:
       - mysql:/var/lib/mysql
+      - ./sql-scripts:/docker-entrypoint-initdb.d 
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: coffeeshop
     ports:
       - 3307:3306
 

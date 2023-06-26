@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS coffeeshop;
+
+USE coffeeshop;
+
+CREATE TABLE IF NOT EXISTS user (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    favourite_coffee VARCHAR(255)
+);
