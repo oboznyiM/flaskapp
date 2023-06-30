@@ -8,8 +8,10 @@ import logging
 import redis
 from functools import wraps
 import time
+import boto3
+import json
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
@@ -27,8 +29,19 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(func=update_health, trigger="interval", seconds=15)
 scheduler.start()
 
+s3 = boto3.resource(
+    service_name='s3',
+)
 
-instances = os.getenv("BACKENDS")
+# Define your bucket and file
+bucket_name = os.getenv("BACKENDS_BUCKET")
+file_name = os.getenv("BACKENDS_FILE")
+
+content_object = s3.Object(bucket_name, file_name)
+file_content = content_object.get()['Body'].read().decode('utf-8')
+
+# In this case, let's assume the content in S3 is JSON data
+instances = json.loads(file_content)
 if instances is not None:
     for url in instances.split(","):
         all_instances.append(Instance(url))
